@@ -971,18 +971,17 @@ then
 		cp $fstab_tmp $fstab
 		printf "Your original fstab is backed up to $fstab_save\n"
 
-		cmdline_txt=/boot/cmdline.txt
-		cmdline_save=$cmdline_txt.${PGM}-save
-		if [ -f $cmdline_txt ] && grep -q "$src_root_dev" $cmdline_txt
+		config_txt=/boot/config.txt
+		config_save=$config_txt.${PGM}-save
+		if [ -f $config_txt ] && grep -q "rootdev=" $config_txt
 		then
-			root_part=${src_partition[root_part_num]}
 			partuuid=$(lsblk -n -o PARTUUID $src_root_dev)
 			if [ "$partuuid" != "" ]
 			then
-				cp $cmdline_txt $cmdline_save
-				sed -i "s/\/dev\/$root_part/PARTUUID=$partuuid/" $cmdline_txt
-				printf "  Editing $cmdline_txt, changing root=$src_root_dev to root=PARTUUID=$partuuid\n"
-				printf "Your original cmdline.txt is backed up to $cmdline_save\n"
+				cp $config_txt $config_save
+				sed -i "s/rootdev=PARTUUID=[^[:space:]]*/rootdev=PARTUUID=$partuuid/" $config_txt
+				printf "  Editing $config_txt, changing rootdev to rootdev=PARTUUID=$partuuid\n"
+				printf "Your original config.txt is backed up to $config_save\n"
 			fi
 		fi
 	else
